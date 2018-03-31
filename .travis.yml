@@ -1,36 +1,24 @@
-dist: trusty
-language: c
-compiler:
-  - clang
-  - gcc
-
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install valgrind libpng-dev libjpeg-dev libxml2-dev libfreetype6-dev libx11-dev lcov -qq
-  - pip install --user cpp-coveralls
-  - npm install
-  - npm install --save-dev @commitlint/travis-cli
-
-before_script:
-  - ./node_modules/.bin/commitlint-travis && ./autogen.sh
-
+language: python
+# python versions to use during the tests
+python:
+    - "2.7"
+    - "3.4"
+# command to install dependencies
+install:
+    - pip install -r requirements.txt
+# command to run tests
 script:
-  - ./configure --enable-code-coverage
-  - make
-  - make check
-  - cd test
-  - make
-  - ./test
-  - valgrind --leak-check=full --error-exitcode=42 .libs/lt-test
-
+    - py.test --cov-report term-missing --cov=maths
+    - py.test --doctest-modules --cov=maths3 --cov-report term-missing
+#    - py.test
+branches:
+  only:
+   - master
 after_success:
-  - coveralls --gcov-options '\-lp'
-
+    - coveralls
 notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/5b09ab7b7688f3152de0
-      - https://hook.bearychat.com/=bwASg/travis/5b13360858a94c2c3caa6a4ab2dca9e5
-    on_success: change
+  email:
+    recipients:
+      - khelil.sator.git@gmail.com
+    on_success: always
     on_failure: always
-    on_start: never

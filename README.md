@@ -1,198 +1,184 @@
-<p align="center">
-  <a href="http://lcui.org/">
-    <img src="https://lcui.lc-soft.io/static/images/lcui-logo-lg.png" alt="" width=72 height=72>
-  </a>
-  <h3 align="center">LCUI</h3>
-  <p align="center">
-    A small C library for building user interfaces with C, XML and CSS.
-  </p>
-  <p align="center">
-    <a href="https://travis-ci.org/lc-soft/LCUI"><img src="https://travis-ci.org/lc-soft/LCUI.png?branch=master" alt="Build Status"></a>
-    <a href="https://coveralls.io/github/lc-soft/LCUI?branch=develop"><img src="https://coveralls.io/repos/github/lc-soft/LCUI/badge.svg?branch=develop" alt="Coverage Status"></a>
-    <a href="http://opensource.org/licenses/MIT"><img src="https://img.shields.io/github/license/lc-soft/LCUI.svg" alt="License"></a>
-    <a href="https://github.com/lc-soft/LCUI/releases"><img src="https://img.shields.io/github/release/lc-soft/LCUI/all.svg" alt="Github Release"></a>
-    <a href="https://github.com/lc-soft/LCUI/releases"><img src="https://img.shields.io/github/downloads/lc-soft/LCUI/total.svg" alt="Github All Releases"></a>
-    <img src="https://img.shields.io/github/repo-size/lc-soft/LCUI.svg" alt="Repo size">
-    <img src="https://img.shields.io/github/languages/code-size/lc-soft/LCUI.svg" alt="Code size">
-  </p>
-</p>
+[![Build Status](https://travis-ci.org/ksator/continuous-integration-with-python.svg?branch=master)](https://travis-ci.org/ksator/continuous-integration-with-python)
+[![Coverage Status](https://coveralls.io/repos/github/ksator/continuous-integration/badge.svg?branch=master)](https://coveralls.io/github/ksator/continuous-integration?branch=master)  
 
-## Table of contents
+# About this repo: 
+- How to syntax check python script using py_compile
+- How to run python tests using pylint
+- How to test python code with pytest.  
+- How to mesure test coverage with pytest-cov (Pytest plugin for measuring coverage).
+- How to automate tests using pytest with TravisCI.   
+- Automatic coverage reporting with Coveralls.  
 
-- [Introduction](#introduction)
-- [License](#license)
-- [Documentation](#documentation)
-- [Building](#building)
-- [Contribution](#contribution)
-- [Backers](#backers)
-- [Sponsors](#sponsors)
 
-## Introduction
+# python syntax check using py_compile: 
+You can use the module py_compile to validate the syntax of a python script.  
+```
+python -m py_compile maths.py  
+```
 
-LCUI is a freely available software library for building user interfaces. It is written in C and supports the use of XML and CSS to describe the graphical interface of simple desktop apps.
+# python tests using pylint:
+This python script uses an undefined variable
+```
+# more a.py 
+a
+print a
+```
 
-[中文版说明文档](README.zh-cn.md)
+So python can't execute it.
+```
+# python a.py 
+Traceback (most recent call last):
+  File "a.py", line 1, in <module>
+    a
+NameError: name 'a' is not defined
+```
 
-### Features
+However py_compile doesnt catch the error. py_compile only helps with syntax error and other basic checks. Python only goes into function during runtime and hence undefined variable cannot be caught using that. 
+```
+# python -m py_compile a.py 
+```
 
-- **Written in C:** Suitable for small applications written primarily in C.
-- **Cross platform:** Support for Windows and Linux, you can write Windows Desktop apps and Universal Windows Platform apps, as well as Linux Desktop apps.
-- **XML parsing:** Support for using XML markup language to describe the structure of the graphical user interface.
-- **CSS parsing:** Support for using a simplified version of CSS to describe the presentation of the graphical user interface. The CSS version used does not support all the features of CSS, like `transition`, `transform`, `animation`, `@media`, `@key-frames` etc, you can read the file [css_parser.c](https://github.com/lc-soft/LCUI/blob/53e268251a53bf371ca7aaa7862ec69fb4d0015a/src/gui/css_parser.c#L550) for more details.
-- **HTML-Like layout:** Support the **block**, **inline-block** and simple **flex** layout, If you have web page development experience, then LCUI will be familiar.
-- **Flexible:** Support for adapting the interface to screens of different pixel densities by setting global scaling. Support for using screen density related sp and dp units to describe position and size of the elements.
-- **Text rendering:** Support for the text to set the global font, line height, horizontal alignment, and also support to set the color, background color, bold, italic for some text blocks separately.
-- **Font management:** Support for loading multiple font files and using fonts of different families, weights and styles.
-- **Image processing:** Provide image read interfaces: support for reading jpg, png and bmp format images.
-- **Touch:** Supports multi-touch, but currently only on Windows platforms.
+However, pylint detects this error. 
 
-### Missing features
+pylint installation: 
+```
+sudo -s
+pip install astroid
+pip install isort
+pip install pylint
+```
+Test your script with pylint:
+```
+# pylint a.py -r no
+No config file found, using default configuration
+************* Module a
+C:  1, 0: Missing module docstring (missing-docstring)
+W:  1, 0: Statement seems to have no effect (pointless-statement)
+E:  1, 0: Undefined variable 'a' (undefined-variable)
+E:  2, 6: Undefined variable 'a' (undefined-variable)
+```
 
-LCUI is a personal project, its main purpose is to allow the author to easily develop simple GUI applications. 
+# Continious integration for Python code
 
-What is "simple"? It means fewer features, for example:
+## Requirements: 
 
-- No hardware acceleration, graphics rendering is inefficient.
-- Cannot select text and copy it on user interface.
-- Cannot use CTRL+C to copy content, and cannot use CTRL+V to paste content to input boxes.
-- Cannot use the Input Method Engine to input non-ASCII characters, like Chinese, Japanese, etc.
-- Rounded corner borders are not supported in this version.
-- Layout system is simple. Grid and table layouts are not supported.
-- No English documentation, it is hard to use.
+#### Pytest 
+Pytest is a testing tool for python.  
+To test yourself your python code locally using pytest, you first need to install it: 
+```
+sudo pip install pytest pytest-cov coveralls  
+```
+Actually, coveralls installation is not required locally. coveralls is used by Travis CI to push coverage report to the Coveralls service.     
 
-If you can solve any of the above problems, you can provide technical support to the author by submitting an issue or pull request.
+#### Travis CI:  
+https://travis-ci.com/  
+https://travis-ci.org/  
+You need a github account.  
+You can test your code from Github automatically (at each ```git push```) using Travis CI.  
+Github supports webhook with Travis CI.  
+Travis CI runs tests every time you push to your GitHub repository.  
 
-### Screenshots
 
-![Hello, World!](https://lcui.lc-soft.io/static/images/screenshot-lcui-hello.png)
+#### Coveralls:   
+https://coveralls.io/  
+Travis pushes the coverage report to Coveralls every time Travis is run.   
+You can sign in to Travis and coveralls with your github account.  
 
-[![LCUI.css](https://lcui.lc-soft.io/static/images/screenshot-lcui-css.gif)](https://github.com/lc-ui/LCUI.css)
+## How to clone this repository:   
+```
+git clone https://github.com/ksator/continuous-integration-with-python.git
+cd continuous-integration-with-python/  
+```
 
-[![LCFinder](https://lcui.lc-soft.io/static/images/screenshot-lcfinder.png)](https://github.com/lc-soft/LC-Finder)
+## How does it work: 
 
-## Documentation
+#### pytest:    
+This is a testing tool for python.   
 
-- Tutorial: [https://lcui.lc-soft.io/guide/](https://lcui.lc-soft.io/guide/)
-- Changelog: [docs/CHANGES.md](docs/CHANGES.md)
+pytest installation: 
+```
+pip install pytest
+```
+By default, pytest discovers tests by looking at files that have these patterns test_*.py and *_test.py  
+Type ```py.test``` on the command line at your project root directory: Pytest will traverse all your subdirectories, gather up all the test files, run your tests, and provide an output.  
 
-API reference documentation has not yet been prepared, you can refer to the header files, source code, and tests.
 
-## Building
+[**maths.py**](maths.py) has some function definitions. [**test_multiple.py**](tests/test_multiple.py) has the tests for math.py  
 
-### Bootstrap
+#### doctest:    
+The doctest module searches for pieces of text that look like interactive Python sessions and then executes those sessions to verify that they work exactly as shown.  
+https://docs.python.org/2/library/doctest.html  
+Pytest supports doctests with the ```--doctest-modules``` flag.  
 
-To bootstrap the build you need to run `./configure` (in the root of the source tree).
+[**maths3.py**](maths3.py) is using doctests. The tests are in the code comment.  
 
-In the simplest case you would run:
+#### coverage reporting:   
+Testing is important, measuring coverage is also important.   
+Pytest can measure coverage for you with the coverage plugin, found in the pytest-cov package. pytest-cov is a Pytest plugin for measuring coverage.  
 
-    git clone https://github.com/lc-soft/LCUI.git
-    cd LCUI
-    ./autogen.sh
-    ./configure
-    make
-    make install
+pytest-cov installation: 
+```
+pip install pytest-cov
+```
 
-If you want to experience the demo, please run:
+Use the option ```--cov``` to mesure coverage.  
+With the option ```--cov-report term-missing```, we can see which lines are not covered.   
 
-    cd test
-    make
-    ./hellowrold
+#### Travis CI:  
+To make these tests and reports automatic, we use a github webhook with Travis CI.   
+Every time you push to your GitHub repository, Travis tests with pytest the repository.   
+The file [**.travis.yml**](.travis.yml) has the Travis CI details.  
+The file [**requirements.txt**](requirements.txt) has the list of python packages Travis installs.  
 
-If you want to use custom building options, please read the [INSTALL](INSTALL) file for more details.
+#### Coveralls:  
+Our [**.travis.yml**](.travis.yml) file use the service Coveralls: Travis pushes the coverage report to Coveralls every time it runs, i.e., every time you push something to your GitHub repository.  
+ 
+## How to run python tests locally:   
+```
+py.test  
+py.test -v  
 
-### Prerequisites
+py.test --cov .  
+py.test --cov . -v  
 
-If you want to build full-featured LCUI, we suggest you install the following
- dependent libraries:
+py.test --cov maths.py  
+py.test --cov maths.py -v  
 
- * [libpng](http://www.libpng.org/pub/png/libpng.html) — PNG image compression library
- * [libjpeg](http://www.ijg.org/) — JPEG image compression library
- * [libxml2](http://xmlsoft.org/) — The XML C parser and toolkit
- * [libx11](https://www.x.org/) — X11 client-side library
- * [freetype](https://www.freetype.org/) — Font engine
+py.test --cov-report term-missing --cov .  
+py.test --cov-report term-missing --cov . -v  
 
-If your system is Ubuntu, you can run following command to install dependencies:
+py.test --cov-report term-missing --cov=maths.py  
+py.test --cov-report term-missing --cov=maths.py -v  
 
-    apt-get install libpng-dev libjpeg-dev libxml2-dev libfreetype6-dev libx11-dev
+py.test --doctest-modules -v  
 
-### Building On Windows
+py.test --doctest-modules --cov .  
+py.test --doctest-modules --cov . -v  
 
-LCUI is mainly developed in the Windows environment, you can use VisualStudio to open the file `build/windows/LCUI.sln` and compile LCUI.
+py.test --doctest-modules --cov . --cov-report term-missing  
+py.test --doctest-modules --cov . --cov-report term-missing -v  
 
-## Contribution
+py.test --doctest-modules --cov=maths3.py  
+py.test --doctest-modules --cov=maths3.py -v   
 
-Please read through our [contributing guidelines](/.github/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
+py.test --doctest-modules --cov=maths3.py --cov-report term-missing  
+py.test --doctest-modules --cov=maths3.py --cov-report term-missing -v  
+```
+##  setup.cfg file:   
+You can use a setup.cfg file at the root of the project with configuration options (ignore maths2.py, cov-report term-missing, ....) to then invoke your tests with a simple call to py.test.  
+More details:   
+- https://ilovesymposia.com/2014/10/13/continuous-integration-in-python-3-set-up-your-test-configuration-files/  
+- http://pytest.org/latest/customize.html  
+- http://coverage.readthedocs.io/en/latest/config.html  
 
-## License
 
-The LCUI Project is released under [the MIT License]((http://opensource.org/licenses/MIT)).
-
-## Backers
-
-Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/lcui#backer)]
-
-<a href="https://opencollective.com/lcui/backer/0/website" target="_blank"><img src="https://opencollective.com/lcui/backer/0/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/1/website" target="_blank"><img src="https://opencollective.com/lcui/backer/1/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/2/website" target="_blank"><img src="https://opencollective.com/lcui/backer/2/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/3/website" target="_blank"><img src="https://opencollective.com/lcui/backer/3/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/4/website" target="_blank"><img src="https://opencollective.com/lcui/backer/4/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/5/website" target="_blank"><img src="https://opencollective.com/lcui/backer/5/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/6/website" target="_blank"><img src="https://opencollective.com/lcui/backer/6/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/7/website" target="_blank"><img src="https://opencollective.com/lcui/backer/7/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/8/website" target="_blank"><img src="https://opencollective.com/lcui/backer/8/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/9/website" target="_blank"><img src="https://opencollective.com/lcui/backer/9/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/10/website" target="_blank"><img src="https://opencollective.com/lcui/backer/10/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/11/website" target="_blank"><img src="https://opencollective.com/lcui/backer/11/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/12/website" target="_blank"><img src="https://opencollective.com/lcui/backer/12/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/13/website" target="_blank"><img src="https://opencollective.com/lcui/backer/13/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/14/website" target="_blank"><img src="https://opencollective.com/lcui/backer/14/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/15/website" target="_blank"><img src="https://opencollective.com/lcui/backer/15/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/16/website" target="_blank"><img src="https://opencollective.com/lcui/backer/16/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/17/website" target="_blank"><img src="https://opencollective.com/lcui/backer/17/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/18/website" target="_blank"><img src="https://opencollective.com/lcui/backer/18/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/19/website" target="_blank"><img src="https://opencollective.com/lcui/backer/19/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/20/website" target="_blank"><img src="https://opencollective.com/lcui/backer/20/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/21/website" target="_blank"><img src="https://opencollective.com/lcui/backer/21/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/22/website" target="_blank"><img src="https://opencollective.com/lcui/backer/22/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/23/website" target="_blank"><img src="https://opencollective.com/lcui/backer/23/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/24/website" target="_blank"><img src="https://opencollective.com/lcui/backer/24/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/25/website" target="_blank"><img src="https://opencollective.com/lcui/backer/25/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/26/website" target="_blank"><img src="https://opencollective.com/lcui/backer/26/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/27/website" target="_blank"><img src="https://opencollective.com/lcui/backer/27/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/28/website" target="_blank"><img src="https://opencollective.com/lcui/backer/28/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/backer/29/website" target="_blank"><img src="https://opencollective.com/lcui/backer/29/avatar.svg"></a>
-
-## Sponsors
-
-Become a sponsor and get your logo on our README on Github with a link to your site. [[Become a sponsor](https://opencollective.com/lcui#sponsor)]
-
-<a href="https://opencollective.com/lcui/sponsor/0/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/1/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/2/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/3/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/4/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/5/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/6/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/7/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/8/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/9/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/9/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/10/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/10/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/11/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/11/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/12/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/12/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/13/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/13/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/14/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/14/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/15/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/15/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/16/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/16/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/17/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/17/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/18/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/18/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/19/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/19/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/20/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/20/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/21/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/21/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/22/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/22/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/23/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/23/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/24/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/24/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/25/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/25/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/26/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/26/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/27/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/27/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/28/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/28/avatar.svg"></a>
-<a href="https://opencollective.com/lcui/sponsor/29/website" target="_blank"><img src="https://opencollective.com/lcui/sponsor/29/avatar.svg"></a>
+# Looking for more help regarding these topics?
+- [**introduction to CI with Travis**](https://www.youtube.com/watch?v=buXwBr9H3VY)
+- [**introduction to pytest**](https://www.youtube.com/watch?v=LdVJj65ikRY) 
+- [**python doctest module**](https://docs.python.org/2/library/doctest.html)
+- [**automated tests with pytest**](https://ilovesymposia.com/2014/10/01/continuous-integration-0-automated-tests-with-pytest/)
+- [**measuring test coverage**](https://ilovesymposia.com/2014/10/02/continuous-integration-1-test-coverage/)  
+- [**setting up test configuration files**](https://ilovesymposia.com/2014/10/13/continuous-integration-in-python-3-set-up-your-test-configuration-files/)  
+- [**using Travis-CI to run your tests automatically with each git push**](https://ilovesymposia.com/2014/10/15/continuous-integration-in-python-4-set-up-travis-ci/)  
+- [**continuously check your test coverage using Coveralls**](https://ilovesymposia.com/2014/10/15/continuous-integration-in-python-5-report-test-coverage-using-coveralls/)
+- [**badge your repo**](https://ilovesymposia.com/2014/10/17/continuous-integration-in-python-6-show-off-your-work/)  
